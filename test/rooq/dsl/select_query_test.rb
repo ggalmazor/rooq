@@ -439,6 +439,34 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.sql).equals("(SELECT books.author_id FROM books) EXCEPT (SELECT authors.id FROM authors)")
   end
 
+  # CASE WHEN expressions
+
+  def test_case_when_expression
+    category = Rooq::CaseExpression.new
+      .when(books.PUBLISHED_IN.lt(2000), Rooq::Literal.new("classic"))
+      .when(books.PUBLISHED_IN.lt(2020), Rooq::Literal.new("modern"))
+      .else(Rooq::Literal.new("recent"))
+
+    query = Rooq::DSL.select(books.TITLE, category.as(:category))
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.title, CASE WHEN books.published_in < $1 THEN $2 WHEN books.published_in < $3 THEN $4 ELSE $5 END AS category FROM books")
+    assert_that(result.params).equals([2000, "classic", 2020, "modern", "recent"])
+  end
+
+  # table aliases
+
+  def test_from_with_alias
+    query = Rooq::DSL.select(books.TITLE)
+                     .from(books, as: :b)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.title FROM books AS b")
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

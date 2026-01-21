@@ -16,6 +16,7 @@
 - [UPDATE Queries](#update-queries)
 - [DELETE Queries](#delete-queries)
 - [Subqueries](#subqueries)
+- [Code Generation](#code-generation)
 
 ## Defining Tables
 
@@ -491,6 +492,66 @@ executor = Rooq::ValidatingExecutor.new(pg_connection, validator)
 
 # Queries are validated against the schema before execution
 executor.execute(query)  # Raises ValidationError if query references invalid tables/columns
+```
+
+## Code Generation
+
+Generate Ruby table definitions from your PostgreSQL database schema.
+
+```ruby
+require "pg"
+require "rooq"
+
+# Connect to database
+connection = PG.connect(dbname: "myapp_development")
+
+# Introspect schema
+introspector = Rooq::Generator::Introspector.new(connection)
+schema_info = introspector.introspect_schema(schema: "public")
+
+# Generate code with Sorbet types (default)
+generator = Rooq::Generator::CodeGenerator.new(schema_info)
+puts generator.generate
+
+# Generate code without Sorbet types
+generator = Rooq::Generator::CodeGenerator.new(schema_info, typed: false)
+puts generator.generate
+```
+
+### Generated Code with Sorbet Types
+
+```ruby
+# typed: strict
+# frozen_string_literal: true
+
+require "rooq"
+require "sorbet-runtime"
+
+module Schema
+  extend T::Sig
+
+  USERS = T.let(Rooq::Table.new(:users) do |t|
+    t.field :id, :integer
+    t.field :name, :string
+    t.field :email, :string
+  end, Rooq::Table)
+end
+```
+
+### Generated Code without Sorbet Types
+
+```ruby
+# frozen_string_literal: true
+
+require "rooq"
+
+module Schema
+  USERS = Rooq::Table.new(:users) do |t|
+    t.field :id, :integer
+    t.field :name, :string
+    t.field :email, :string
+  end
+end
 ```
 
 ## Immutability

@@ -14,7 +14,9 @@ module Rooq
       @options = T.let({
         schema: "public",
         output: nil,
+        stdout: false,
         typed: true,
+        namespace: "Schema",
         database: nil,
         host: "localhost",
         port: 5432,
@@ -76,8 +78,16 @@ module Rooq
           @options[:schema] = v
         end
 
-        opts.on("-o", "--output FILE", "Output file (default: stdout)") do |v|
+        opts.on("-o", "--output FILE", "Output file (default: lib/schema.rb)") do |v|
           @options[:output] = v
+        end
+
+        opts.on("-n", "--namespace NAMESPACE", "Module namespace (default: Schema)") do |v|
+          @options[:namespace] = v
+        end
+
+        opts.on("--stdout", "Print to stdout instead of file") do
+          @options[:stdout] = true
         end
 
         opts.on("--[no-]typed", "Generate Sorbet types (default: true)") do |v|
@@ -109,18 +119,31 @@ module Rooq
       introspector = Generator::Introspector.new(connection)
       schema_info = introspector.introspect_schema(schema: @options[:schema])
 
-      generator = Generator::CodeGenerator.new(schema_info, typed: @options[:typed])
+      generator = Generator::CodeGenerator.new(
+        schema_info,
+        typed: @options[:typed],
+        namespace: @options[:namespace]
+      )
       code = generator.generate
 
-      if @options[:output]
-        File.write(@options[:output], code)
-        puts "Generated #{@options[:output]}"
-      else
+      if @options[:stdout]
         puts code
+      else
+        output_file = @options[:output] || default_output_file
+        File.write(output_file, code)
+        puts "Generated #{output_file}"
       end
 
       connection.close
       0
+    end
+
+    sig { returns(String) }
+    def default_output_file
+      # Convert namespace to filename: MyApp::Schema -> my_app/schema.rb
+      namespace = @options[:namespace].to_s
+      filename = namespace.gsub("::", "/").gsub(/([a-z])([A-Z])/, '\1_\2').downcase
+      "lib/#{filename}.rb"
     end
 
     sig { returns(T.untyped) }
@@ -162,14 +185,16 @@ module Rooq
           help                Show this help message
 
         Options for 'generate':
-          -d, --database DATABASE   Database name (required)
-          -h, --host HOST           Database host (default: localhost)
-          -p, --port PORT           Database port (default: 5432)
-          -U, --username USERNAME   Database username
-          -W, --password PASSWORD   Database password
-          -s, --schema SCHEMA       Schema name (default: public)
-          -o, --output FILE         Output file (default: stdout)
-          --[no-]typed              Generate Sorbet types (default: true)
+          -d, --database DATABASE     Database name (required)
+          -h, --host HOST             Database host (default: localhost)
+          -p, --port PORT             Database port (default: 5432)
+          -U, --username USERNAME     Database username
+          -W, --password PASSWORD     Database password
+          -s, --schema SCHEMA         Database schema (default: public)
+          -o, --output FILE           Output file (default: lib/schema.rb)
+          -n, --namespace NAMESPACE   Module namespace (default: Schema)
+          --stdout                    Print to stdout instead of file
+          --[no-]typed                Generate Sorbet types (default: true)
 
         Environment Variables:
           PGHOST      Default database host
@@ -178,17 +203,23 @@ module Rooq
           PGPASSWORD  Default database password
 
         Examples:
-          # Generate schema to stdout
+          # Generate schema to lib/schema.rb
           rooq generate -d myapp_development
 
-          # Generate schema to file with Sorbet types
-          rooq generate -d myapp_development -o lib/schema.rb
+          # Generate with custom namespace (writes to lib/my_app/db.rb)
+          rooq generate -d myapp_development -n MyApp::DB
 
-          # Generate schema without Sorbet types
-          rooq generate -d myapp_development -o lib/schema.rb --no-typed
+          # Generate to custom file
+          rooq generate -d myapp_development -o db/schema.rb
+
+          # Generate without Sorbet types
+          rooq generate -d myapp_development --no-typed
+
+          # Print to stdout instead of file
+          rooq generate -d myapp_development --stdout
 
           # Connect to remote database
-          rooq generate -d myapp -h db.example.com -U postgres -W secret -o lib/schema.rb
+          rooq generate -d myapp -h db.example.com -U postgres -W secret
 
       HELP
       0

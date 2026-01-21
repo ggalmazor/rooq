@@ -498,6 +498,30 @@ executor.execute(query)  # Raises ValidationError if query references invalid ta
 
 Generate Ruby table definitions from your PostgreSQL database schema.
 
+### Using the CLI (Recommended)
+
+```bash
+# Generate schema to lib/schema.rb (default)
+rooq generate -d myapp_development
+
+# Generate with custom namespace (writes to lib/my_app/db.rb)
+rooq generate -d myapp_development -n MyApp::DB
+
+# Generate to custom file
+rooq generate -d myapp_development -o db/schema.rb
+
+# Generate without Sorbet types
+rooq generate -d myapp_development --no-typed
+
+# Print to stdout instead of file
+rooq generate -d myapp_development --stdout
+
+# Full connection options
+rooq generate -d myapp -h localhost -p 5432 -U postgres -W secret -s public
+```
+
+### Using Ruby API
+
 ```ruby
 require "pg"
 require "rooq"
@@ -509,8 +533,8 @@ connection = PG.connect(dbname: "myapp_development")
 introspector = Rooq::Generator::Introspector.new(connection)
 schema_info = introspector.introspect_schema(schema: "public")
 
-# Generate code with Sorbet types (default)
-generator = Rooq::Generator::CodeGenerator.new(schema_info)
+# Generate code with Sorbet types and custom namespace
+generator = Rooq::Generator::CodeGenerator.new(schema_info, namespace: "MyApp::DB")
 puts generator.generate
 
 # Generate code without Sorbet types
@@ -527,13 +551,19 @@ puts generator.generate
 require "rooq"
 require "sorbet-runtime"
 
-module Schema
+module MyApp::DB
   extend T::Sig
 
   USERS = T.let(Rooq::Table.new(:users) do |t|
     t.field :id, :integer
     t.field :name, :string
     t.field :email, :string
+  end, Rooq::Table)
+
+  USER_ACCOUNTS = T.let(Rooq::Table.new(:user_accounts) do |t|
+    t.field :id, :integer
+    t.field :user_id, :integer
+    t.field :account_type, :string
   end, Rooq::Table)
 end
 ```

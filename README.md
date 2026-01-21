@@ -63,14 +63,17 @@ result = query.to_sql
 Generate Ruby table definitions from your PostgreSQL database:
 
 ```bash
-# Generate schema to stdout
+# Generate schema to lib/schema.rb (default)
 rooq generate -d myapp_development
 
-# Generate schema to file
-rooq generate -d myapp_development -o lib/schema.rb
+# Generate with custom namespace (writes to lib/my_app/db.rb)
+rooq generate -d myapp_development -n MyApp::DB
 
 # Generate without Sorbet types
-rooq generate -d myapp_development -o lib/schema.rb --no-typed
+rooq generate -d myapp_development --no-typed
+
+# Print to stdout instead of file
+rooq generate -d myapp_development --stdout
 
 # See all options
 rooq help

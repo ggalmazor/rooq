@@ -8,10 +8,11 @@ module Rooq
     class CodeGenerator
       extend T::Sig
 
-      sig { params(schema_info: T::Array[T.untyped], typed: T::Boolean).void }
-      def initialize(schema_info, typed: true)
+      sig { params(schema_info: T::Array[T.untyped], typed: T::Boolean, namespace: String).void }
+      def initialize(schema_info, typed: true, namespace: "Schema")
         @schema_info = schema_info
         @typed = typed
+        @namespace = namespace
       end
 
       sig { returns(String) }
@@ -39,7 +40,7 @@ module Rooq
           require "rooq"
           require "sorbet-runtime"
 
-          module Schema
+          module #{@namespace}
             extend T::Sig
 
           #{indent(tables_code.join("\n\n"), 2)}
@@ -59,7 +60,7 @@ module Rooq
 
           require "rooq"
 
-          module Schema
+          module #{@namespace}
           #{indent(untyped_tables.join("\n\n"), 2)}
           end
         RUBY
@@ -67,8 +68,7 @@ module Rooq
 
       sig { params(table_info: T.untyped).returns(String) }
       def generate_table(table_info)
-        class_name = camelize(table_info.name)
-        const_name = class_name.upcase
+        const_name = table_info.name.to_s.upcase
         fields_code = table_info.columns.map do |column|
           "    t.field :#{column.name}, :#{column.type}"
         end.join("\n")
@@ -81,11 +81,6 @@ module Rooq
       end
 
       private
-
-      sig { params(string: T.any(String, Symbol)).returns(String) }
-      def camelize(string)
-        string.to_s.split("_").map(&:capitalize).join
-      end
 
       sig { params(text: String, spaces: Integer).returns(String) }
       def indent(text, spaces)

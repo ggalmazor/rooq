@@ -378,6 +378,23 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.params).equals([1])
   end
 
+  # CTEs (WITH clause)
+
+  def test_with_adds_cte_to_query
+    recent_books = Rooq::DSL.select(books.ID, books.TITLE)
+                            .from(books)
+                            .where(books.PUBLISHED_IN.gte(2020))
+
+    query = Rooq::DSL.select(Rooq::Literal.new(:*))
+                     .from(:recent_books)
+                     .with(:recent_books, recent_books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("WITH recent_books AS (SELECT books.id, books.title FROM books WHERE books.published_in >= $1) SELECT * FROM recent_books")
+    assert_that(result.params).equals([2020])
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

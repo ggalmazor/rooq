@@ -273,6 +273,71 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.params).equals([5])
   end
 
+  # aggregate functions
+
+  def test_count_without_argument_produces_count_star
+    query = Rooq::DSL.select(Rooq::Aggregates.count)
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT COUNT(*) FROM books")
+  end
+
+  def test_count_with_field_produces_count_field
+    query = Rooq::DSL.select(Rooq::Aggregates.count(books.ID))
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT COUNT(books.id) FROM books")
+  end
+
+  def test_count_distinct_produces_count_distinct
+    query = Rooq::DSL.select(Rooq::Aggregates.count(books.AUTHOR_ID, distinct: true))
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT COUNT(DISTINCT books.author_id) FROM books")
+  end
+
+  def test_sum_produces_sum_function
+    query = Rooq::DSL.select(Rooq::Aggregates.sum(books.PUBLISHED_IN))
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT SUM(books.published_in) FROM books")
+  end
+
+  def test_avg_produces_avg_function
+    query = Rooq::DSL.select(Rooq::Aggregates.avg(books.PUBLISHED_IN))
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT AVG(books.published_in) FROM books")
+  end
+
+  def test_min_produces_min_function
+    query = Rooq::DSL.select(Rooq::Aggregates.min(books.PUBLISHED_IN))
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT MIN(books.published_in) FROM books")
+  end
+
+  def test_max_produces_max_function
+    query = Rooq::DSL.select(Rooq::Aggregates.max(books.PUBLISHED_IN))
+                     .from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT MAX(books.published_in) FROM books")
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

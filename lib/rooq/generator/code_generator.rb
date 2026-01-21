@@ -8,7 +8,7 @@ module Rooq
     class CodeGenerator
       extend T::Sig
 
-      sig { params(schema_info: T::Array[Introspector::TableInfo], typed: T::Boolean).void }
+      sig { params(schema_info: T::Array[T.untyped], typed: T::Boolean).void }
       def initialize(schema_info, typed: true)
         @schema_info = schema_info
         @typed = typed
@@ -65,7 +65,7 @@ module Rooq
         RUBY
       end
 
-      sig { params(table_info: Introspector::TableInfo).returns(String) }
+      sig { params(table_info: T.untyped).returns(String) }
       def generate_table(table_info)
         class_name = camelize(table_info.name)
         const_name = class_name.upcase

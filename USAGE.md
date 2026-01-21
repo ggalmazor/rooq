@@ -16,7 +16,16 @@
 - [UPDATE Queries](#update-queries)
 - [DELETE Queries](#delete-queries)
 - [Subqueries](#subqueries)
+- [Executing Queries](#executing-queries)
+  - [Getting SQL and Parameters](#getting-sql-and-parameters)
+  - [Using Context](#using-context-recommended)
+  - [Using Executor](#using-executor-low-level)
+- [Type Handling](#type-handling)
+  - [Result Type Coercion](#result-type-coercion)
+  - [Parameter Type Conversion](#parameter-type-conversion)
+- [Query Validation](#query-validation-development-mode)
 - [Code Generation](#code-generation)
+- [Immutability](#immutability)
 
 ## Defining Tables
 
@@ -472,16 +481,258 @@ query = Rooq::DSL.select(books.TITLE)
 
 ## Executing Queries
 
+### Getting SQL and Parameters
+
 ```ruby
-# Get SQL and parameters
+# Get SQL and parameters without executing
 result = query.to_sql
 puts result.sql     # The SQL string with $1, $2, etc.
 puts result.params  # Array of parameter values
-
-# Execute with a connection
-executor = Rooq::Executor.new(pg_connection)
-rows = executor.execute(query)
 ```
+
+### Using Context (Recommended)
+
+Context is the main entry point for executing queries. It manages connections and provides a clean API for query execution.
+
+#### Single Connection
+
+Use this when you want to manage the connection lifecycle yourself:
+
+```ruby
+require "pg"
+require "rooq"
+
+# Connect to database
+connection = PG.connect(dbname: "myapp_development")
+
+# Create context from connection
+ctx = Rooq::Context.using(connection)
+
+# Define tables (or use generated schema)
+books = Rooq::Table.new(:books) do |t|
+  t.field :id, :integer
+  t.field :title, :string
+  t.field :author_id, :integer
+end
+
+# Execute queries
+query = Rooq::DSL.select(books.TITLE, books.AUTHOR_ID)
+                 .from(books)
+                 .where(books.ID.eq(1))
+
+# Fetch a single row (results use symbol keys)
+row = ctx.fetch_one(query)
+puts row[:title] if row
+
+# Fetch all rows
+rows = ctx.fetch_all(
+  Rooq::DSL.select(books.TITLE).from(books).limit(10)
+)
+rows.each { |r| puts r[:title] }
+
+# Execute without fetching (for INSERT/UPDATE/DELETE)
+ctx.execute(
+  Rooq::DSL.insert_into(books)
+           .columns(:title, :author_id)
+           .values("New Book", 1)
+)
+
+# Don't forget to close when done
+connection.close
+```
+
+#### Connection Pool
+
+Use this for applications that need to handle multiple concurrent requests:
+
+```ruby
+require "pg"
+require "rooq"
+
+# Create a connection pool
+pool = Rooq::Adapters::PostgreSQL::ConnectionPool.new(size: 10, timeout: 5) do
+  PG.connect(
+    dbname: "myapp_production",
+    host: "localhost",
+    user: "postgres",
+    password: "secret"
+  )
+end
+
+# Create context from pool
+ctx = Rooq::Context.using_pool(pool)
+
+# Connections are automatically acquired and released per query
+books = Schema::BOOKS  # Assuming generated schema
+rows = ctx.fetch_all(
+  Rooq::DSL.select(books.TITLE).from(books)
+)
+
+# Each query gets its own connection from the pool
+# Multiple threads can safely use the same context
+Thread.new do
+  ctx.fetch_all(Rooq::DSL.select(books.ID).from(books))
+end
+
+# Shutdown pool when application exits
+pool.shutdown
+```
+
+#### Transactions
+
+```ruby
+ctx = Rooq::Context.using(connection)
+
+# Transaction commits on success, rolls back on error
+ctx.transaction do
+  ctx.execute(
+    Rooq::DSL.insert_into(books)
+             .columns(:title, :author_id)
+             .values("Book 1", 1)
+  )
+
+  ctx.execute(
+    Rooq::DSL.update(authors)
+             .set(:book_count, Rooq::Literal.new("book_count + 1"))
+             .where(authors.ID.eq(1))
+  )
+end
+
+# If any query fails, all changes are rolled back
+begin
+  ctx.transaction do
+    ctx.execute(Rooq::DSL.insert_into(books).columns(:title).values("Book"))
+    raise "Something went wrong!"  # This triggers rollback
+  end
+rescue RuntimeError
+  puts "Transaction was rolled back"
+end
+```
+
+#### With RETURNING Clause
+
+```ruby
+# INSERT with RETURNING
+query = Rooq::DSL.insert_into(books)
+                 .columns(:title, :author_id)
+                 .values("New Book", 1)
+                 .returning(books.ID, books.TITLE)
+
+result = ctx.fetch_one(query)
+puts "Created book ##{result['id']}: #{result['title']}"
+
+# UPDATE with RETURNING
+query = Rooq::DSL.update(books)
+                 .set(:title, "Updated Title")
+                 .where(books.ID.eq(1))
+                 .returning(books.ID, books.TITLE)
+
+result = ctx.fetch_one(query)
+puts "Updated: #{result['title']}"
+
+# DELETE with RETURNING
+query = Rooq::DSL.delete_from(books)
+                 .where(books.ID.eq(1))
+                 .returning(books.ID, books.TITLE)
+
+deleted = ctx.fetch_one(query)
+puts "Deleted: #{deleted['title']}" if deleted
+```
+
+### Using Executor (Low-level)
+
+For more control over execution, use the Executor class directly:
+
+```ruby
+executor = Rooq::Executor.new(pg_connection)
+
+# Execute and get raw PG::Result
+result = executor.execute(query)
+
+# Fetch helpers
+row = executor.fetch_one(query)      # Single row or nil
+rows = executor.fetch_all(query)     # Array of rows
+
+# Lifecycle hooks
+executor.on_before_execute do |rendered|
+  puts "SQL: #{rendered.sql}"
+  puts "Params: #{rendered.params}"
+end
+
+executor.on_after_execute do |rendered, result|
+  puts "Returned #{result.ntuples} rows"
+end
+```
+
+## Type Handling
+
+### Result Type Coercion
+
+Results automatically convert PostgreSQL types to Ruby types:
+
+```ruby
+# Results use symbol keys
+row = ctx.fetch_one(query)
+row[:title]      # String
+row[:id]         # Integer (not string)
+row[:created_at] # Time object
+row[:birth_date] # Date object
+row[:tags]       # Array (from PostgreSQL array)
+row[:metadata]   # Hash (from JSON/JSONB)
+row[:settings]   # Hash (from JSONB)
+```
+
+Supported conversions:
+- `json`, `jsonb` → Ruby Hash or Array
+- `integer[]`, `bigint[]` → Array of integers
+- `text[]`, `varchar[]` → Array of strings
+- `timestamp`, `timestamptz` → Time
+- `date` → Date
+- `boolean` → true/false
+- `integer`, `bigint`, `smallint` → Integer
+- `real`, `double precision`, `numeric` → Float
+
+### Parameter Type Conversion
+
+Parameters are automatically converted when executing queries:
+
+```ruby
+# Time/Date parameters
+created_after = Time.now - 86400  # 24 hours ago
+query = Rooq::DSL.select(books.TITLE)
+                 .from(books)
+                 .where(books.CREATED_AT.gte(created_after))
+ctx.fetch_all(query)  # Time converted to ISO 8601
+
+# Hash parameters (converted to JSON)
+metadata = { tags: ["ruby", "sql"], priority: "high" }
+query = Rooq::DSL.insert_into(books)
+                 .columns(:title, :metadata)
+                 .values("My Book", metadata)
+ctx.execute(query)  # Hash converted to JSON string
+
+# Array parameters (for array columns)
+tags = ["programming", "ruby"]
+query = Rooq::DSL.insert_into(books)
+                 .columns(:title, :tags)
+                 .values("Ruby Guide", tags)
+ctx.execute(query)  # Array converted to PostgreSQL array literal
+
+# Date parameters
+published = Date.new(2024, 1, 15)
+query = Rooq::DSL.select(books.TITLE)
+                 .from(books)
+                 .where(books.PUBLISHED_DATE.eq(published))
+ctx.fetch_all(query)  # Date converted to ISO 8601
+```
+
+Supported parameter conversions:
+- `Time`, `DateTime` → ISO 8601 string
+- `Date` → ISO 8601 date string
+- `Hash` → JSON string
+- `Array` of primitives → PostgreSQL array literal (`{1,2,3}`)
+- `Array` of hashes → JSON array string
+- `Symbol` → String
 
 ## Query Validation (Development Mode)
 

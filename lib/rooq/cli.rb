@@ -1,6 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "fileutils"
 require "optparse"
 require "sorbet-runtime"
 
@@ -130,6 +131,7 @@ module Rooq
         puts code
       else
         output_file = @options[:output] || default_output_file
+        FileUtils.mkdir_p(File.dirname(output_file))
         File.write(output_file, code)
         puts "Generated #{output_file}"
       end

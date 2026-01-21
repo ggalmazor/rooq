@@ -1,0 +1,10 @@
+--title "rOOQ Documentation"
+--main README.md
+--markup markdown
+--plugin yard-sorbet
+lib/**/*.rb
+-
+README.md
+USAGE.md
+CHANGELOG.md
+LICENSE

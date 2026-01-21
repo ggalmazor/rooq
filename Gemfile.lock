@@ -2,6 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     benchmark (0.5.0)
+    date (3.5.1)
+    erb (6.0.1)
     erubi (1.13.1)
     logger (1.7.0)
     minicrest (1.0.21)
@@ -12,12 +14,20 @@ GEM
     pg (1.6.3)
     pg (1.6.3-arm64-darwin)
     prism (1.8.0)
+    psych (5.3.1)
+      date
+      stringio
     rake (13.3.1)
     rbi (0.3.9)
       prism (~> 1.0)
       rbs (>= 3.4.4)
     rbs (3.10.2)
       logger
+    rdoc (6.17.0)
+      erb
+      psych (>= 4.0.0)
+      tsort
+    redcarpet (3.6.1)
     rexml (3.4.4)
     sorbet (0.6.12894)
       sorbet-static (= 0.6.12894)
@@ -33,6 +43,7 @@ GEM
       rexml (>= 3.2.6)
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
+    stringio (3.2.0)
     tapioca (0.16.11)
       benchmark
       bundler (>= 2.2.25)
@@ -44,6 +55,8 @@ GEM
       thor (>= 1.2.0)
       yard-sorbet
     thor (1.5.0)
+    tsort (0.2.0)
+    webrick (1.9.2)
     yard (0.9.38)
     yard-sorbet (0.9.0)
       sorbet-runtime
@@ -57,12 +70,19 @@ DEPENDENCIES
   minitest (~> 5.27)
   pg (~> 1.5)
   rake (~> 13.0)
+  rdoc (~> 6.10)
+  redcarpet (~> 3.6)
   sorbet (~> 0.5)
   sorbet-runtime (~> 0.5)
   tapioca (~> 0.16)
+  webrick (~> 1.9)
+  yard (~> 0.9)
+  yard-sorbet (~> 0.9)
 
 CHECKSUMS
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
+  date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
+  erb (6.0.1) sha256=28ecdd99c5472aebd5674d6061e3c6b0a45c049578b071e5a52c2a7f13c197e5
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   minicrest (1.0.21) sha256=3deb7cc3ea42a8b2fd7b5f43eaac8a7b9a4f7505a180be9e918e9883b0a9130c
@@ -72,17 +92,23 @@ CHECKSUMS
   pg (1.6.3) sha256=1388d0563e13d2758c1089e35e973a3249e955c659592d10e5b77c468f628a99
   pg (1.6.3-arm64-darwin) sha256=7240330b572e6355d7c75a7de535edb5dfcbd6295d9c7777df4d9dddfb8c0e5f
   prism (1.8.0) sha256=84453a16ef5530ea62c5f03ec16b52a459575ad4e7b9c2b360fd8ce2c39c1254
+  psych (5.3.1) sha256=eb7a57cef10c9d70173ff74e739d843ac3b2c019a003de48447b2963d81b1974
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
   rbi (0.3.9) sha256=d6a187bd0b376e999d3d82a5e5798a61178be98b894b7b35741c14162c9ea015
   rbs (3.10.2) sha256=bd8a5dc4c62f229f020146b61844a31f9c79e649449d212904a474eb79c846fc
+  rdoc (6.17.0) sha256=0f50d4e568fc98195f9bb155a9e8dff6c7feabfb515fb22ef6df1d12ad5a02b7
+  redcarpet (3.6.1) sha256=d444910e6aa55480c6bcdc0cdb057626e8a32c054c29e793fa642ba2f155f445
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
   sorbet (0.6.12894) sha256=2b20dfd6170b56591e33e075af0b355e5d20beaef840ce570730a2e9ec6f1aa2
   sorbet-runtime (0.6.12894) sha256=4f0cbe041d80dac973ec3a5a848679922074dd77cc19f46384b27a8b9ff4a90c
   sorbet-static (0.6.12894-universal-darwin) sha256=8ab7b2e8dde70e0936140e02dec6ac499b43131ec293c636a5c49de03bb3c1f1
   sorbet-static-and-runtime (0.6.12894) sha256=09e9a66e869ba36ade3fbd095d11ae9bf38fa2d48151ea67e9d555df6189b9d3
   spoom (1.6.3) sha256=0d05a501a643a2e3cb75357583fcd0a400e92e05cd05a1bf1a08cda6d321d153
+  stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
   tapioca (0.16.11) sha256=beeb388a5e2022ef8880cd24f57bc2acb59b65a4d5a6aa59bc1f10bc7b1eb1f7
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
+  tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
+  webrick (1.9.2) sha256=beb4a15fc474defed24a3bda4ffd88a490d517c9e4e6118c3edce59e45864131
   yard (0.9.38) sha256=721fb82afb10532aa49860655f6cc2eaa7130889df291b052e1e6b268283010f
   yard-sorbet (0.9.0) sha256=03d1aa461b9e9c82b886919a13aa3e09fcf4d1852239d2967ed97e92723ffe21
 

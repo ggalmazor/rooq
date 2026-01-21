@@ -450,28 +450,22 @@ module Rooq
           if condition.value.nil?
             "#{expr_sql} IS NULL"
           else
-            params << condition.value
-            "#{expr_sql} = $#{params.length}"
+            "#{expr_sql} = #{render_condition_value(condition.value, params)}"
           end
         when :ne
           if condition.value.nil?
             "#{expr_sql} IS NOT NULL"
           else
-            params << condition.value
-            "#{expr_sql} <> $#{params.length}"
+            "#{expr_sql} <> #{render_condition_value(condition.value, params)}"
           end
         when :gt
-          params << condition.value
-          "#{expr_sql} > $#{params.length}"
+          "#{expr_sql} > #{render_condition_value(condition.value, params)}"
         when :lt
-          params << condition.value
-          "#{expr_sql} < $#{params.length}"
+          "#{expr_sql} < #{render_condition_value(condition.value, params)}"
         when :gte
-          params << condition.value
-          "#{expr_sql} >= $#{params.length}"
+          "#{expr_sql} >= #{render_condition_value(condition.value, params)}"
         when :lte
-          params << condition.value
-          "#{expr_sql} <= $#{params.length}"
+          "#{expr_sql} <= #{render_condition_value(condition.value, params)}"
         when :in
           if condition.value.is_a?(DSL::SelectQuery)
             subquery = render_select(condition.value)
@@ -485,17 +479,13 @@ module Rooq
             "#{expr_sql} IN (#{placeholders.join(', ')})"
           end
         when :like
-          params << condition.value
-          "#{expr_sql} LIKE $#{params.length}"
+          "#{expr_sql} LIKE #{render_condition_value(condition.value, params)}"
         when :ilike
-          params << condition.value
-          "#{expr_sql} ILIKE $#{params.length}"
+          "#{expr_sql} ILIKE #{render_condition_value(condition.value, params)}"
         when :between
-          params << condition.value[0]
-          min_placeholder = "$#{params.length}"
-          params << condition.value[1]
-          max_placeholder = "$#{params.length}"
-          "#{expr_sql} BETWEEN #{min_placeholder} AND #{max_placeholder}"
+          min_sql = render_condition_value(condition.value[0], params)
+          max_sql = render_condition_value(condition.value[1], params)
+          "#{expr_sql} BETWEEN #{min_sql} AND #{max_sql}"
         when :is_null
           "#{expr_sql} IS NULL"
         when :is_not_null
@@ -516,6 +506,15 @@ module Rooq
         params.concat(subquery.params)
         prefix = condition.negated ? "NOT " : ""
         "#{prefix}EXISTS (#{subquery.sql})"
+      end
+
+      def render_condition_value(value, params)
+        if value.is_a?(Expression)
+          render_expression(value, params)
+        else
+          params << value
+          "$#{params.length}"
+        end
       end
     end
 

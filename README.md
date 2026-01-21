@@ -16,6 +16,8 @@ A Ruby query builder inspired by [jOOQ](https://www.jooq.org/). Build type-safe 
   - CASE WHEN expressions
   - Aggregate functions (COUNT, SUM, AVG, MIN, MAX)
   - Grouping sets (CUBE, ROLLUP, GROUPING SETS)
+- **CLI Tool**: Generate schema files from the command line
+- **Optional Sorbet Types**: Full type annotations with optional generation
 
 ## Installation
 
@@ -54,6 +56,24 @@ query = Rooq::DSL.select(books.TITLE, books.PUBLISHED_IN)
 result = query.to_sql
 # result.sql => "SELECT books.title, books.published_in FROM books WHERE books.published_in >= $1 ORDER BY books.title ASC LIMIT 10"
 # result.params => [2010]
+```
+
+## CLI Usage
+
+Generate Ruby table definitions from your PostgreSQL database:
+
+```bash
+# Generate schema to stdout
+rooq generate -d myapp_development
+
+# Generate schema to file
+rooq generate -d myapp_development -o lib/schema.rb
+
+# Generate without Sorbet types
+rooq generate -d myapp_development -o lib/schema.rb --no-typed
+
+# See all options
+rooq help
 ```
 
 ## Documentation

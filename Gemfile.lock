@@ -1,0 +1,29 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minicrest (1.0.21)
+      minitest (~> 5.0)
+    minitest (5.27.0)
+    pg (1.6.3)
+    pg (1.6.3-arm64-darwin)
+    rake (13.3.1)
+
+PLATFORMS
+  arm64-darwin-25
+  ruby
+
+DEPENDENCIES
+  minicrest (~> 1.0)
+  minitest (~> 5.27)
+  pg (~> 1.5)
+  rake (~> 13.0)
+
+CHECKSUMS
+  minicrest (1.0.21) sha256=3deb7cc3ea42a8b2fd7b5f43eaac8a7b9a4f7505a180be9e918e9883b0a9130c
+  minitest (5.27.0) sha256=2d3b17f8a36fe7801c1adcffdbc38233b938eb0b4966e97a6739055a45fa77d5
+  pg (1.6.3) sha256=1388d0563e13d2758c1089e35e973a3249e955c659592d10e5b77c468f628a99
+  pg (1.6.3-arm64-darwin) sha256=7240330b572e6355d7c75a7de535edb5dfcbd6295d9c7777df4d9dddfb8c0e5f
+  rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
+
+BUNDLED WITH
+  4.0.3

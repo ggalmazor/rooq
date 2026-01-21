@@ -2,13 +2,18 @@
 
 module Rooq
   class Condition
-    attr_reader :field, :operator, :value
+    attr_reader :expression, :operator, :value
 
-    def initialize(field, operator, value)
-      @field = field
+    def initialize(expression, operator, value)
+      @expression = expression
       @operator = operator
       @value = value
       freeze
+    end
+
+    # Backwards compatibility
+    def field
+      @expression
     end
 
     def and(other)
@@ -36,5 +41,25 @@ module Rooq
     def or(other)
       CombinedCondition.new(:or, [*@conditions, other])
     end
+  end
+
+  # EXISTS condition
+  class ExistsCondition
+    attr_reader :subquery, :negated
+
+    def initialize(subquery, negated: false)
+      @subquery = subquery
+      @negated = negated
+      freeze
+    end
+  end
+
+  # Helper methods for conditions
+  def self.exists(subquery)
+    ExistsCondition.new(subquery)
+  end
+
+  def self.not_exists(subquery)
+    ExistsCondition.new(subquery, negated: true)
   end
 end

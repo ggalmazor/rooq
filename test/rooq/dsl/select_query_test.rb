@@ -237,6 +237,28 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.sql).equals("SELECT DISTINCT books.author_id FROM books")
   end
 
+  # GROUP BY
+
+  def test_group_by_adds_group_by_clause
+    query = Rooq::DSL.select(books.AUTHOR_ID)
+                     .from(books)
+                     .group_by(books.AUTHOR_ID)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.author_id FROM books GROUP BY books.author_id")
+  end
+
+  def test_group_by_supports_multiple_fields
+    query = Rooq::DSL.select(books.AUTHOR_ID, books.PUBLISHED_IN)
+                     .from(books)
+                     .group_by(books.AUTHOR_ID, books.PUBLISHED_IN)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.author_id, books.published_in FROM books GROUP BY books.author_id, books.published_in")
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

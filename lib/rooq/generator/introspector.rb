@@ -1,9 +1,14 @@
+# typed: strict
 # frozen_string_literal: true
+
+require "sorbet-runtime"
 
 module Rooq
   module Generator
     class Introspector
-      PG_TYPE_MAP = {
+      extend T::Sig
+
+      PG_TYPE_MAP = T.let({
         "integer" => :integer,
         "bigint" => :bigint,
         "smallint" => :smallint,
@@ -31,12 +36,14 @@ module Rooq
         "inet" => :inet,
         "cidr" => :cidr,
         "macaddr" => :macaddr
-      }.freeze
+      }.freeze, T::Hash[String, Symbol])
 
+      sig { params(connection: T.untyped).void }
       def initialize(connection)
         @connection = connection
       end
 
+      sig { params(schema: String).returns(T::Array[String]) }
       def introspect_tables(schema: "public")
         tables_sql = <<~SQL
           SELECT table_name
@@ -50,6 +57,7 @@ module Rooq
         result.map { |row| row["table_name"] }
       end
 
+      sig { params(table_name: String, schema: String).returns(T::Array[ColumnInfo]) }
       def introspect_columns(table_name, schema: "public")
         columns_sql = <<~SQL
           SELECT
@@ -81,6 +89,7 @@ module Rooq
         end
       end
 
+      sig { params(table_name: String, schema: String).returns(T::Array[String]) }
       def introspect_primary_keys(table_name, schema: "public")
         pk_sql = <<~SQL
           SELECT kcu.column_name
@@ -98,6 +107,7 @@ module Rooq
         result.map { |row| row["column_name"] }
       end
 
+      sig { params(table_name: String, schema: String).returns(T::Array[ForeignKeyInfo]) }
       def introspect_foreign_keys(table_name, schema: "public")
         fk_sql = <<~SQL
           SELECT
@@ -126,6 +136,7 @@ module Rooq
         end
       end
 
+      sig { params(schema: String).returns(T::Array[TableInfo]) }
       def introspect_schema(schema: "public")
         tables = introspect_tables(schema: schema)
         tables.map do |table_name|
@@ -140,14 +151,51 @@ module Rooq
 
       private
 
+      sig { params(pg_type: String).returns(Symbol) }
       def map_pg_type(pg_type)
         PG_TYPE_MAP.fetch(pg_type.downcase, :unknown)
       end
     end
 
     class ColumnInfo
-      attr_reader :name, :type, :pg_type, :nullable, :default, :max_length, :precision, :scale
+      extend T::Sig
 
+      sig { returns(String) }
+      attr_reader :name
+
+      sig { returns(Symbol) }
+      attr_reader :type
+
+      sig { returns(String) }
+      attr_reader :pg_type
+
+      sig { returns(T::Boolean) }
+      attr_reader :nullable
+
+      sig { returns(T.nilable(String)) }
+      attr_reader :default
+
+      sig { returns(T.nilable(Integer)) }
+      attr_reader :max_length
+
+      sig { returns(T.nilable(Integer)) }
+      attr_reader :precision
+
+      sig { returns(T.nilable(Integer)) }
+      attr_reader :scale
+
+      sig do
+        params(
+          name: String,
+          type: Symbol,
+          pg_type: String,
+          nullable: T::Boolean,
+          default: T.nilable(String),
+          max_length: T.nilable(Integer),
+          precision: T.nilable(Integer),
+          scale: T.nilable(Integer)
+        ).void
+      end
       def initialize(name:, type:, pg_type:, nullable:, default:, max_length:, precision:, scale:)
         @name = name
         @type = type
@@ -162,8 +210,18 @@ module Rooq
     end
 
     class ForeignKeyInfo
-      attr_reader :column_name, :foreign_table, :foreign_column
+      extend T::Sig
 
+      sig { returns(String) }
+      attr_reader :column_name
+
+      sig { returns(String) }
+      attr_reader :foreign_table
+
+      sig { returns(String) }
+      attr_reader :foreign_column
+
+      sig { params(column_name: String, foreign_table: String, foreign_column: String).void }
       def initialize(column_name:, foreign_table:, foreign_column:)
         @column_name = column_name
         @foreign_table = foreign_table
@@ -173,13 +231,33 @@ module Rooq
     end
 
     class TableInfo
-      attr_reader :name, :columns, :primary_keys, :foreign_keys
+      extend T::Sig
 
+      sig { returns(String) }
+      attr_reader :name
+
+      sig { returns(T::Array[ColumnInfo]) }
+      attr_reader :columns
+
+      sig { returns(T::Array[String]) }
+      attr_reader :primary_keys
+
+      sig { returns(T::Array[ForeignKeyInfo]) }
+      attr_reader :foreign_keys
+
+      sig do
+        params(
+          name: String,
+          columns: T::Array[ColumnInfo],
+          primary_keys: T::Array[String],
+          foreign_keys: T::Array[ForeignKeyInfo]
+        ).void
+      end
       def initialize(name:, columns:, primary_keys:, foreign_keys:)
         @name = name
-        @columns = columns.freeze
-        @primary_keys = primary_keys.freeze
-        @foreign_keys = foreign_keys.freeze
+        @columns = T.let(columns.freeze, T::Array[ColumnInfo])
+        @primary_keys = T.let(primary_keys.freeze, T::Array[String])
+        @foreign_keys = T.let(foreign_keys.freeze, T::Array[ForeignKeyInfo])
         freeze
       end
     end

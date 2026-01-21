@@ -7,6 +7,7 @@ module Rooq
 end
 
 require_relative "rooq/version"
+require_relative "rooq/expression"
 require_relative "rooq/field"
 require_relative "rooq/table"
 require_relative "rooq/condition"

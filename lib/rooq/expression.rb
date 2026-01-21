@@ -165,22 +165,42 @@ module Rooq
 
   # Window function expression
   class WindowFunction < Expression
-    attr_reader :function, :partition_by, :order_by, :frame
+    attr_reader :function, :frame
 
-    def initialize(function)
+    def initialize(function, partition_fields: [], order_specs: [], frame: nil)
       @function = function
-      @partition_by = []
-      @order_by = []
-      @frame = nil
+      @partition_fields = Array(partition_fields).freeze
+      @order_specs = Array(order_specs).freeze
+      @frame = frame
+    end
+
+    def partition_by(*fields)
+      return @partition_fields if fields.empty?
+      WindowFunction.new(@function, partition_fields: @partition_fields + fields.flatten, order_specs: @order_specs, frame: @frame)
+    end
+
+    def order_by(*specs)
+      return @order_specs if specs.empty?
+      WindowFunction.new(@function, partition_fields: @partition_fields, order_specs: @order_specs + specs.flatten, frame: @frame)
+    end
+
+    def rows(start_bound, end_bound = nil)
+      new_frame = WindowFrame.new(WindowFrame::ROWS, start_bound, end_bound)
+      WindowFunction.new(@function, partition_fields: @partition_fields, order_specs: @order_specs, frame: new_frame)
+    end
+
+    def rows_between(start_bound, end_bound)
+      new_frame = WindowFrame.new(WindowFrame::ROWS, start_bound, end_bound)
+      WindowFunction.new(@function, partition_fields: @partition_fields, order_specs: @order_specs, frame: new_frame)
+    end
+
+    def range_between(start_bound, end_bound)
+      new_frame = WindowFrame.new(WindowFrame::RANGE, start_bound, end_bound)
+      WindowFunction.new(@function, partition_fields: @partition_fields, order_specs: @order_specs, frame: new_frame)
     end
 
     def over(partition_by: [], order_by: [], frame: nil)
-      wf = WindowFunction.new(@function)
-      wf.instance_variable_set(:@partition_by, Array(partition_by).freeze)
-      wf.instance_variable_set(:@order_by, Array(order_by).freeze)
-      wf.instance_variable_set(:@frame, frame)
-      wf.freeze
-      wf
+      WindowFunction.new(@function, partition_fields: partition_by, order_specs: order_by, frame: frame)
     end
   end
 

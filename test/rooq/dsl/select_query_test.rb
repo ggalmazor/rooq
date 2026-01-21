@@ -338,6 +338,46 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.sql).equals("SELECT MAX(books.published_in) FROM books")
   end
 
+  # window functions
+
+  def test_row_number_with_order_by
+    query = Rooq::DSL.select(
+      books.TITLE,
+      Rooq::WindowFunctions.row_number
+                           .order_by(books.PUBLISHED_IN.desc)
+    ).from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.title, ROW_NUMBER() OVER (ORDER BY books.published_in DESC) FROM books")
+  end
+
+  def test_rank_with_partition_and_order
+    query = Rooq::DSL.select(
+      books.TITLE,
+      Rooq::WindowFunctions.rank
+                           .partition_by(books.AUTHOR_ID)
+                           .order_by(books.PUBLISHED_IN.desc)
+    ).from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.title, RANK() OVER (PARTITION BY books.author_id ORDER BY books.published_in DESC) FROM books")
+  end
+
+  def test_lag_with_offset
+    query = Rooq::DSL.select(
+      books.TITLE,
+      Rooq::WindowFunctions.lag(books.TITLE, 1)
+                           .order_by(books.PUBLISHED_IN.asc)
+    ).from(books)
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.title, LAG(books.title, $1) OVER (ORDER BY books.published_in ASC) FROM books")
+    assert_that(result.params).equals([1])
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

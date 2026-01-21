@@ -191,17 +191,33 @@ module Rooq
                      render_select(op.left).tap { |r| params.concat(r.params) }.sql
                    end
 
-        right_sql = case op.right
-                    when DSL::SetOperation
-                      render_set_operation_sql(op.right, params)
+        # Track offset for renumbering right query's placeholders
+        param_offset = params.length
+
+        right_result = case op.right
+                       when DSL::SetOperation
+                         render_set_operation_sql(op.right, params)
+                       else
+                         render_select(op.right).tap { |r| params.concat(r.params) }
+                       end
+
+        # Renumber placeholders in right query if needed
+        right_sql = case right_result
+                    when RenderedQuery
+                      renumber_placeholders(right_result.sql, param_offset)
                     else
-                      render_select(op.right).tap { |r| params.concat(r.params) }.sql
+                      right_result
                     end
 
         operator = op.operator.to_s.upcase
         operator = "#{operator} ALL" if op.all
 
         "(#{left_sql}) #{operator} (#{right_sql})"
+      end
+
+      def renumber_placeholders(sql, offset)
+        return sql if offset == 0
+        sql.gsub(/\$(\d+)/) { |_| "$#{Regexp.last_match(1).to_i + offset}" }
       end
 
       def render_cte(cte, params)

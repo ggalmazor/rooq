@@ -395,6 +395,50 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.params).equals([2020])
   end
 
+  # set operations
+
+  def test_union_combines_two_queries
+    query1 = Rooq::DSL.select(books.TITLE)
+                      .from(books)
+                      .where(books.PUBLISHED_IN.eq(2020))
+
+    query2 = Rooq::DSL.select(books.TITLE)
+                      .from(books)
+                      .where(books.PUBLISHED_IN.eq(2021))
+
+    result = query1.union(query2).to_sql
+
+    assert_that(result.sql).equals("(SELECT books.title FROM books WHERE books.published_in = $1) UNION (SELECT books.title FROM books WHERE books.published_in = $2)")
+    assert_that(result.params).equals([2020, 2021])
+  end
+
+  def test_union_all_keeps_duplicates
+    query1 = Rooq::DSL.select(books.TITLE).from(books)
+    query2 = Rooq::DSL.select(books.TITLE).from(books)
+
+    result = query1.union(query2, all: true).to_sql
+
+    assert_that(result.sql).equals("(SELECT books.title FROM books) UNION ALL (SELECT books.title FROM books)")
+  end
+
+  def test_intersect_combines_queries
+    query1 = Rooq::DSL.select(books.AUTHOR_ID).from(books)
+    query2 = Rooq::DSL.select(authors.ID).from(authors)
+
+    result = query1.intersect(query2).to_sql
+
+    assert_that(result.sql).equals("(SELECT books.author_id FROM books) INTERSECT (SELECT authors.id FROM authors)")
+  end
+
+  def test_except_combines_queries
+    query1 = Rooq::DSL.select(books.AUTHOR_ID).from(books)
+    query2 = Rooq::DSL.select(authors.ID).from(authors)
+
+    result = query1.except(query2).to_sql
+
+    assert_that(result.sql).equals("(SELECT books.author_id FROM books) EXCEPT (SELECT authors.id FROM authors)")
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

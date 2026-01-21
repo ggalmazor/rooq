@@ -259,6 +259,20 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.sql).equals("SELECT books.author_id, books.published_in FROM books GROUP BY books.author_id, books.published_in")
   end
 
+  # HAVING
+
+  def test_having_adds_having_clause
+    query = Rooq::DSL.select(books.AUTHOR_ID, Rooq::Aggregates.count(books.ID))
+                     .from(books)
+                     .group_by(books.AUTHOR_ID)
+                     .having(Rooq::Aggregates.count(books.ID).gt(5))
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT books.author_id, COUNT(books.id) FROM books GROUP BY books.author_id HAVING COUNT(books.id) > $1")
+    assert_that(result.params).equals([5])
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

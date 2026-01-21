@@ -8,6 +8,7 @@ require_relative "rooq/dsl"
 require_relative "rooq/dialect"
 require_relative "rooq/generator"
 require_relative "rooq/executor"
+require_relative "rooq/record"
 
 module Rooq
   class Error < StandardError; end

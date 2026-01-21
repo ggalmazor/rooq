@@ -225,6 +225,18 @@ class SelectQueryTest < Minitest::Test
     assert_that(result.sql).starts_with("SELECT books.title, authors.name FROM books RIGHT JOIN authors ON")
   end
 
+  # DISTINCT
+
+  def test_distinct_adds_distinct_keyword
+    query = Rooq::DSL.select(books.AUTHOR_ID)
+                     .from(books)
+                     .distinct
+
+    result = query.to_sql
+
+    assert_that(result.sql).equals("SELECT DISTINCT books.author_id FROM books")
+  end
+
   # immutability
 
   def test_returns_a_new_query_object_for_each_builder_method

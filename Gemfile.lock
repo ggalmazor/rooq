@@ -24,7 +24,7 @@ GEM
       rbs (>= 3.4.4)
     rbs (3.10.2)
       logger
-    rdoc (6.17.0)
+    rdoc (7.1.0)
       erb
       psych (>= 4.0.0)
       tsort
@@ -73,7 +73,7 @@ DEPENDENCIES
   minitest (~> 5.27)
   pg (~> 1.5)
   rake (~> 13.0)
-  rdoc (~> 6.10)
+  rdoc (~> 7.1)
   redcarpet (~> 3.6)
   sorbet (~> 0.5)
   sorbet-runtime (~> 0.6)
@@ -100,7 +100,7 @@ CHECKSUMS
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
   rbi (0.3.9) sha256=d6a187bd0b376e999d3d82a5e5798a61178be98b894b7b35741c14162c9ea015
   rbs (3.10.2) sha256=bd8a5dc4c62f229f020146b61844a31f9c79e649449d212904a474eb79c846fc
-  rdoc (6.17.0) sha256=0f50d4e568fc98195f9bb155a9e8dff6c7feabfb515fb22ef6df1d12ad5a02b7
+  rdoc (7.1.0) sha256=494899df0706c178596ca6e1d50f1b7eb285a9b2aae715be5abd742734f17363
   redcarpet (3.6.1) sha256=d444910e6aa55480c6bcdc0cdb057626e8a32c054c29e793fa642ba2f155f445
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
   sorbet (0.6.12897) sha256=5461550fce93d5c5c3005405a90badae9883a56b4ae06319595cec06cb3bf48e

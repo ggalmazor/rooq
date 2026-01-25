@@ -12,7 +12,7 @@ group :development, :test do
   gem "rake", "~> 13.0"
   gem "sorbet", "~> 0.5"
   gem "tapioca", "~> 0.16"
-  gem "rdoc", "~> 6.10"
+  gem "rdoc", "~> 7.1"
   gem "redcarpet", "~> 3.6"
   gem "webrick", "~> 1.9"
   gem "yard", "~> 0.9"

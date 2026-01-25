@@ -5,13 +5,13 @@ require_relative "lib/rooq/version"
 Gem::Specification.new do |spec|
   spec.name = "rooq"
   spec.version = Rooq::VERSION
-  spec.authors = ["Guillermo Galmazor"]
-  spec.email = ["guillermo@galmazor.com"]
+  spec.authors = ["Guillermo G. Almazor"]
+  spec.email = ["guille@galmazor.com"]
 
   spec.summary = "A jOOQ-inspired query builder for Ruby"
   spec.description = "Build type-safe SQL queries using a fluent, chainable API. Generate Ruby code from database schemas with optional Sorbet type annotations."
   spec.homepage = "https://github.com/ggalmazor/rooq"
-  spec.license = "MIT"
+  spec.license = "AGPL-3.0-only"
   spec.required_ruby_version = ">= 3.4"
 
   spec.metadata["homepage_uri"] = spec.homepage

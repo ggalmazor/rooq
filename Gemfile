@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 gem "pg", "~> 1.5"
 
-gem "sorbet-runtime", "~> 0.5"
+gem "sorbet-runtime", "~> 0.6"
 
 group :development, :test do
   gem "minitest", "~> 5.27"

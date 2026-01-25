@@ -13,6 +13,7 @@ GEM
     parallel (1.27.0)
     pg (1.6.3)
     pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
     prism (1.8.0)
     psych (5.3.1)
       date
@@ -29,13 +30,14 @@ GEM
       tsort
     redcarpet (3.6.1)
     rexml (3.4.4)
-    sorbet (0.6.12894)
-      sorbet-static (= 0.6.12894)
-    sorbet-runtime (0.6.12894)
-    sorbet-static (0.6.12894-universal-darwin)
-    sorbet-static-and-runtime (0.6.12894)
-      sorbet (= 0.6.12894)
-      sorbet-runtime (= 0.6.12894)
+    sorbet (0.6.12897)
+      sorbet-static (= 0.6.12897)
+    sorbet-runtime (0.6.12897)
+    sorbet-static (0.6.12897-universal-darwin)
+    sorbet-static (0.6.12897-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12897)
+      sorbet (= 0.6.12897)
+      sorbet-runtime (= 0.6.12897)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -64,6 +66,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-25
+  x86_64-linux
 
 DEPENDENCIES
   minicrest (~> 1.0)
@@ -73,7 +76,7 @@ DEPENDENCIES
   rdoc (~> 6.10)
   redcarpet (~> 3.6)
   sorbet (~> 0.5)
-  sorbet-runtime (~> 0.5)
+  sorbet-runtime (~> 0.6)
   tapioca (~> 0.16)
   webrick (~> 1.9)
   yard (~> 0.9)
@@ -91,6 +94,7 @@ CHECKSUMS
   parallel (1.27.0) sha256=4ac151e1806b755fb4e2dc2332cbf0e54f2e24ba821ff2d3dcf86bf6dc4ae130
   pg (1.6.3) sha256=1388d0563e13d2758c1089e35e973a3249e955c659592d10e5b77c468f628a99
   pg (1.6.3-arm64-darwin) sha256=7240330b572e6355d7c75a7de535edb5dfcbd6295d9c7777df4d9dddfb8c0e5f
+  pg (1.6.3-x86_64-linux) sha256=5d9e188c8f7a0295d162b7b88a768d8452a899977d44f3274d1946d67920ae8d
   prism (1.8.0) sha256=84453a16ef5530ea62c5f03ec16b52a459575ad4e7b9c2b360fd8ce2c39c1254
   psych (5.3.1) sha256=eb7a57cef10c9d70173ff74e739d843ac3b2c019a003de48447b2963d81b1974
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
@@ -99,10 +103,11 @@ CHECKSUMS
   rdoc (6.17.0) sha256=0f50d4e568fc98195f9bb155a9e8dff6c7feabfb515fb22ef6df1d12ad5a02b7
   redcarpet (3.6.1) sha256=d444910e6aa55480c6bcdc0cdb057626e8a32c054c29e793fa642ba2f155f445
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
-  sorbet (0.6.12894) sha256=2b20dfd6170b56591e33e075af0b355e5d20beaef840ce570730a2e9ec6f1aa2
-  sorbet-runtime (0.6.12894) sha256=4f0cbe041d80dac973ec3a5a848679922074dd77cc19f46384b27a8b9ff4a90c
-  sorbet-static (0.6.12894-universal-darwin) sha256=8ab7b2e8dde70e0936140e02dec6ac499b43131ec293c636a5c49de03bb3c1f1
-  sorbet-static-and-runtime (0.6.12894) sha256=09e9a66e869ba36ade3fbd095d11ae9bf38fa2d48151ea67e9d555df6189b9d3
+  sorbet (0.6.12897) sha256=5461550fce93d5c5c3005405a90badae9883a56b4ae06319595cec06cb3bf48e
+  sorbet-runtime (0.6.12897) sha256=0348ab8803c4c3646977fee298083ded9b7e74d5b34b50c567c63eb7e36eb286
+  sorbet-static (0.6.12897-universal-darwin) sha256=72e59dc6357a97a9803649c72ab3bb4a16f69fa2d4f1d863709c6b3ae0cd9d69
+  sorbet-static (0.6.12897-x86_64-linux) sha256=7219a0967e77cba201f9f588d64e53071d3b349e9d3166b746808d2514ce37b2
+  sorbet-static-and-runtime (0.6.12897) sha256=9c4730246f57e07007703ae6bbce1c41425d63bc919f3f753467309ac7ac6394
   spoom (1.6.3) sha256=0d05a501a643a2e3cb75357583fcd0a400e92e05cd05a1bf1a08cda6d321d153
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
   tapioca (0.16.11) sha256=beeb388a5e2022ef8880cd24f57bc2acb59b65a4d5a6aa59bc1f10bc7b1eb1f7

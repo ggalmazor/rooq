@@ -4,6 +4,9 @@
 
 A Ruby query builder inspired by [jOOQ](https://www.jooq.org/). Build type-safe SQL queries using a fluent, chainable API.
 
+[Documentation](https://ggalmazor.com/rooq/)
+
+
 ## Features
 
 - **Fluent Query Builder**: Chainable methods for building SELECT, INSERT, UPDATE, and DELETE queries

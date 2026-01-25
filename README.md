@@ -1,5 +1,7 @@
 # rOOQ
 
+[![CI](https://github.com/ggalmazor/rooq/actions/workflows/ci.yml/badge.svg)](https://github.com/ggalmazor/rooq/actions/workflows/ci.yml) [![Release](https://github.com/ggalmazor/rooq/actions/workflows/release.yml/badge.svg)](https://github.com/ggalmazor/rooq/actions/workflows/release.yml)
+
 A Ruby query builder inspired by [jOOQ](https://www.jooq.org/). Build type-safe SQL queries using a fluent, chainable API.
 
 ## Features

@@ -30,14 +30,14 @@ GEM
       tsort
     redcarpet (3.6.1)
     rexml (3.4.4)
-    sorbet (0.6.12897)
-      sorbet-static (= 0.6.12897)
-    sorbet-runtime (0.6.12897)
-    sorbet-static (0.6.12897-universal-darwin)
-    sorbet-static (0.6.12897-x86_64-linux)
-    sorbet-static-and-runtime (0.6.12897)
-      sorbet (= 0.6.12897)
-      sorbet-runtime (= 0.6.12897)
+    sorbet (0.6.12908)
+      sorbet-static (= 0.6.12908)
+    sorbet-runtime (0.6.12908)
+    sorbet-static (0.6.12908-universal-darwin)
+    sorbet-static (0.6.12908-x86_64-linux)
+    sorbet-static-and-runtime (0.6.12908)
+      sorbet (= 0.6.12908)
+      sorbet-runtime (= 0.6.12908)
     spoom (1.6.3)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -103,11 +103,11 @@ CHECKSUMS
   rdoc (7.1.0) sha256=494899df0706c178596ca6e1d50f1b7eb285a9b2aae715be5abd742734f17363
   redcarpet (3.6.1) sha256=d444910e6aa55480c6bcdc0cdb057626e8a32c054c29e793fa642ba2f155f445
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
-  sorbet (0.6.12897) sha256=5461550fce93d5c5c3005405a90badae9883a56b4ae06319595cec06cb3bf48e
-  sorbet-runtime (0.6.12897) sha256=0348ab8803c4c3646977fee298083ded9b7e74d5b34b50c567c63eb7e36eb286
-  sorbet-static (0.6.12897-universal-darwin) sha256=72e59dc6357a97a9803649c72ab3bb4a16f69fa2d4f1d863709c6b3ae0cd9d69
-  sorbet-static (0.6.12897-x86_64-linux) sha256=7219a0967e77cba201f9f588d64e53071d3b349e9d3166b746808d2514ce37b2
-  sorbet-static-and-runtime (0.6.12897) sha256=9c4730246f57e07007703ae6bbce1c41425d63bc919f3f753467309ac7ac6394
+  sorbet (0.6.12908) sha256=5490cc7c2018ff91f9cffe38d5fe8a0abd57bcc80a5277d5a2a663693c56aad2
+  sorbet-runtime (0.6.12908) sha256=229f43e76527b01c5291c00c43cc29ccebe437a87b34925c3ee250ebf23d328e
+  sorbet-static (0.6.12908-universal-darwin) sha256=bb8dc22b4c7b8809e8a609a46e080581408563f8bb3ef39d4c43ca5c6f45bf86
+  sorbet-static (0.6.12908-x86_64-linux) sha256=2f66fbfc0a8bb7df9a1cf3f9f7e54fc9e1a4fe6b3e8f45b0366c517eb9b8e04e
+  sorbet-static-and-runtime (0.6.12908) sha256=5f10368fbe2684f7f46e48f547e9c07b8642c4b2b97eda07ffdfaa7530445cec
   spoom (1.6.3) sha256=0d05a501a643a2e3cb75357583fcd0a400e92e05cd05a1bf1a08cda6d321d153
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
   tapioca (0.16.11) sha256=beeb388a5e2022ef8880cd24f57bc2acb59b65a4d5a6aa59bc1f10bc7b1eb1f7

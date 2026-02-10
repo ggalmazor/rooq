@@ -11,7 +11,7 @@ group :development, :test do
   gem "minicrest", "~> 1.0"
   gem "rake", "~> 13.0"
   gem "sorbet", "~> 0.5"
-  gem "tapioca", "~> 0.16"
+  gem "tapioca", "~> 0.17"
   gem "rdoc", "~> 7.1"
   gem "redcarpet", "~> 3.6"
   gem "webrick", "~> 1.9"

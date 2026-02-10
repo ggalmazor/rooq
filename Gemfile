@@ -10,7 +10,7 @@ group :development, :test do
   gem "minitest", "~> 5.27"
   gem "minicrest", "~> 1.0"
   gem "rake", "~> 13.0"
-  gem "sorbet", "~> 0.5"
+  gem "sorbet", "~> 0.6"
   gem "tapioca", "~> 0.17"
   gem "rdoc", "~> 7.1"
   gem "redcarpet", "~> 3.6"

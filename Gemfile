@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "pg", "~> 1.5"
+gem "pg", "~> 1.7"
 
 gem "sorbet-runtime", "~> 0.6"
 
